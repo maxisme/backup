@@ -1,0 +1,22 @@
+{
+  "servers": {
+    "server-name": {
+      "host": "root@1.2.3.4",
+      "rclone-dest": "unlimited:/server-backups/chapel/",
+      "exclude-mounts": true
+    }
+  },
+  "exclude-dirs": [
+    "/dev/*",
+    "/proc/*",
+    "/sys/*",
+    "/tmp/*",
+    "/run/*",
+    "/mnt/*",
+    "/media/*",
+    "/lost+found/*",
+    "/var/log/*",
+    "/var/lib/docker/*"
+  ],
+  "encryption-key": "CHANGE ME"
+}
