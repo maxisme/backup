@@ -1,4 +1,5 @@
-# mega-backup
+# backup
+[![push](https://github.com/maxisme/backup/workflows/push/badge.svg)](https://github.com/maxisme/backup/actions)
 
 ## Setup
 1. Add servers to backup in the `servers.json`:
