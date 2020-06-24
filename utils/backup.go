@@ -170,13 +170,9 @@ func EncryptCompressDir(dir, out, key string) error {
 	if err := Tar(dir, w); err != nil {
 		return err
 	}
-	log.Printf("Flushing %s\n", dir)
 	if err := w.Flush(); err != nil {
 		return err
 	}
-	//if err := Tar2(dir, f.Name()); err != nil {
-	//	return err
-	//}
 
 	log.Printf("Encrypting %s\n", dir)
 	outFile, err := os.Create(out)
