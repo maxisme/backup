@@ -6,7 +6,6 @@ import (
 )
 
 func TestEncryptCompressDir(t *testing.T) {
-
 	inFile := "file.tar.gz.encr"
 	outFile := "file.tar.gz"
 	key := "90871670990532809087167099053280"

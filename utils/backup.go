@@ -24,13 +24,13 @@ type RcloneConfig struct {
 }
 
 type Server struct {
-	Host             string   `json:"host"`           // destination of server
+	Host             string   `json:"host"`           // destination ip/hostname of server
 	Port             int      `json:"ssh-port"`       // which ssh port to use [default: 22]
 	PersistDirectory bool     `json:"persist"`        // whether to keep the backed up directory after finished which will speed up future backups dramatically but take up space [default: true]
 	ExcludeMounts    bool     `json:"exclude-mounts"` // whether to exclude mounts [default: false]
 	RcloneDest       string   `json:"rclone-dest"`    // dest:path of rclone config
 	ExcludeDirs      []string `json:"exclude-dirs"`   // directories on server to exclude from backup
-	RootDir          string   `json:"root-dir"`       // root directory to backup - useful when mounting fs to backup
+	RootDir          string   `json:"root-dir"`       // root directory to backup - useful when you are mounting a fs to backup
 }
 
 type ServerEntry struct{ Server }
@@ -114,7 +114,7 @@ func BackupServers(servers ServersConfig) {
 		c := exec.Command("/bin/sh", "-c", servers.PostCmd)
 		log.Println("Running: " + c.String())
 		out, err := c.CombinedOutput()
-		log.Printf("Ran final command '%s'\n%v\n%v\n", servers.PostCmd, out, err)
+		log.Printf("Ran final command '%s'\n%v\n%v\n", servers.PostCmd, string(out), err)
 	}
 }
 

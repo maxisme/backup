@@ -226,6 +226,7 @@ func Tar(src string, writer io.Writer) error {
 	})
 }
 
+// FileToServers converts a file to a ServersConfig
 func FileToServers(path string) (servers ServersConfig, err error) {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
