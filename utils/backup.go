@@ -16,8 +16,6 @@ import (
 	"time"
 )
 
-type ServerName = string
-
 type RcloneConfig struct {
 	Source      string `json:"src"`
 	Destination string `json:"dest"`
@@ -41,10 +39,10 @@ func (s *ServerEntry) UnmarshalJSON(b []byte) error {
 }
 
 type ServersConfig struct {
-	Servers     map[ServerName]ServerEntry `json:"servers"`
-	ExcludeDirs []string                   `json:"exclude-dirs"`   // directories on ALL servers to not backup
-	Key         string                     `json:"encryption-key"` // key to encrypt the compressed server with
-	PostCmd     string                     `json:"post-cmd"`       // command to be executed after backup
+	Servers     map[string]ServerEntry `json:"servers"`
+	ExcludeDirs []string               `json:"exclude-dirs"`   // directories on ALL servers to not backup
+	Key         string                 `json:"encryption-key"` // key to encrypt the compressed server with
+	PostCmd     string                 `json:"post-cmd"`       // command to be executed after backup
 }
 
 const (
