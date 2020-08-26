@@ -23,5 +23,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Decrypted: %s", path)
+	fmt.Printf("Decrypted file to %s", name+".tar.gz")
 }
