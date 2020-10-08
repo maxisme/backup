@@ -39,7 +39,7 @@ func TestExcludeDir(t *testing.T) {
 	fi, _ := os.Stat(outFile)
 	// get the size
 	size := fi.Size()
-	if size != 158 {
+	if size < 158-4 || size > 158+4 {
 		t.Errorf("%d %d", size, 158)
 	}
 
@@ -64,7 +64,7 @@ func TestExcludeNestedDir(t *testing.T) {
 	fi, _ := os.Stat(outFile)
 	// get the size
 	size := fi.Size()
-	if size != 187 {
+	if size < 187-4 || size > 187+4 {
 		t.Errorf("%d %d", size, 187)
 	}
 
