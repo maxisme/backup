@@ -19,6 +19,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/minio/minio/pkg/wildcard"
 )
 
 // https://github.com/Xeoncross/go-aesctr-with-hmac/blob/master/crypt.go
@@ -182,8 +184,8 @@ func Decrypt(in io.Reader, out io.Writer, key string) (err error) {
 	return nil
 }
 
-func Tar(src string, writer io.Writer) error {
-	if _, err := os.Stat(src); err != nil {
+func Tar(path string, excludeDirs []string, writer io.Writer) error {
+	if _, err := os.Stat(path); err != nil {
 		return fmt.Errorf("unable to tar files - %v", err.Error())
 	}
 
@@ -193,9 +195,16 @@ func Tar(src string, writer io.Writer) error {
 	tw := tar.NewWriter(gzw)
 	defer tw.Close()
 
-	return filepath.Walk(src, func(file string, fi os.FileInfo, err error) error {
+	return filepath.Walk(path, func(file string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
+		}
+
+		// ignore directory
+		for _, excludeDir := range excludeDirs {
+			if fi.IsDir() && wildcard.Match(excludeDir, "/"+file+"/") {
+				return filepath.SkipDir
+			}
 		}
 
 		if !fi.Mode().IsRegular() {
@@ -207,7 +216,7 @@ func Tar(src string, writer io.Writer) error {
 			return err
 		}
 
-		header.Name = strings.TrimPrefix(strings.Replace(file, src, "", -1), string(filepath.Separator))
+		header.Name = strings.TrimPrefix(strings.Replace(file, path, "", -1), string(filepath.Separator))
 
 		if err := tw.WriteHeader(header); err != nil {
 			return err

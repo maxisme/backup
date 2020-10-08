@@ -22,13 +22,14 @@ type RcloneConfig struct {
 }
 
 type Server struct {
-	Host             string   `json:"host"`           // destination ip/hostname of server
-	Port             int      `json:"ssh-port"`       // which ssh port to use [default: 22]
-	PersistDirectory bool     `json:"persist"`        // whether to keep the backed up directory after finished which will speed up future backups dramatically but take up space [default: true]
-	ExcludeMounts    bool     `json:"exclude-mounts"` // whether to exclude mounts [default: false]
-	RcloneDest       string   `json:"rclone-dest"`    // dest:path of rclone config
-	ExcludeDirs      []string `json:"exclude-dirs"`   // directories on server to exclude from backup
-	RootDir          string   `json:"root-dir"`       // root directory to backup - useful when you are mounting a fs to backup
+	Host             string   `json:"host"`                  // destination ip/hostname of server
+	Port             int      `json:"ssh-port"`              // which ssh port to use [default: 22]
+	PersistDirectory bool     `json:"persist"`               // whether to keep the backed up directory after finished which will speed up future backups dramatically but take up space [default: true]
+	ExcludeMounts    bool     `json:"exclude-mounts"`        // whether to exclude mounts [default: false]
+	RcloneDest       string   `json:"rclone-dest"`           // dest:path of rclone config
+	ExcludeDirs      []string `json:"exclude-dirs"`          // directories on server to exclude from backup
+	SnapshotExclude  []string `json:"snapshot-exclude-dirs"` // directories to be exclude from snapshot backup
+	RootDir          string   `json:"root-dir"`              // root directory to backup - useful when you are mounting a fs to backup
 }
 
 type ServerEntry struct{ Server }
@@ -82,7 +83,7 @@ func BackupServers(servers ServersConfig) {
 
 			// encrypt and compress directory
 			compressedDirPath := TmpDir + serverName + "_" + strconv.FormatInt(time.Now().Unix(), 10) + EncryptionFileType
-			if err := EncryptCompressDir(backupDir, compressedDirPath, servers.Key); err != nil {
+			if err := EncryptCompressDir(backupDir, compressedDirPath, servers.Key, server.SnapshotExclude); err != nil {
 				log.Printf("%s: Error encrypting/compressing: %s\n", serverName, err)
 				return
 			}
@@ -152,7 +153,7 @@ func TempFileName() string {
 	return filepath.Join(os.TempDir(), hex.EncodeToString(randBytes))
 }
 
-func EncryptCompressDir(dir, out, key string) error {
+func EncryptCompressDir(dir, out, key string, excludeDirs []string) error {
 	f, err := os.Create(TempFileName() + ".tar.gz")
 	if err != nil {
 		return err
@@ -165,7 +166,7 @@ func EncryptCompressDir(dir, out, key string) error {
 
 	log.Printf("Taring %s\n", dir)
 	w := bufio.NewWriter(f)
-	if err := Tar(dir, w); err != nil {
+	if err := Tar(dir, excludeDirs, w); err != nil {
 		return err
 	}
 	if err := w.Flush(); err != nil {
