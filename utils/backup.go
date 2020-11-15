@@ -92,7 +92,7 @@ func BackupServers(servers ServersConfig) {
 				c := exec.Command("rclone", "copy", compressedDirPath, server.RcloneDest)
 				log.Printf("%s: Running: %s\n", serverName, c.String())
 				out, err := c.CombinedOutput()
-				log.Printf("%s: rclone out: %v %v\n", serverName, out, err)
+				log.Printf("%s: rclone out: %s %s\n", serverName, string(out), err)
 				_ = os.Remove(compressedDirPath)
 			}
 
